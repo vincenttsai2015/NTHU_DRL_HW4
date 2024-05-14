@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # max_action = float(env.action_space.high[0])
     
     agent = Agent()
-    episodes = 50
+    episodes = 10
     total_reward = 0
 
     for e in range(episodes):
@@ -153,7 +153,7 @@ if __name__ == '__main__':
             # env.render()
             action = agent.act(observation)
             
-            next_obs, reward, done, _ = env.step(action)
+            next_obs, reward, done, info = env.step(action)
             next_state = obs_preprocessor(next_obs)
             
             observation = next_obs
@@ -166,5 +166,5 @@ if __name__ == '__main__':
         print(f'Episode reward in episode {e}: {episode_reward}')
         total_reward += episode_reward
     
-    avg_reward = total_reward/50
+    avg_reward = total_reward/10
     print(f'Average reward: {avg_reward}')
