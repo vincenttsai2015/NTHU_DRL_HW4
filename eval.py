@@ -38,7 +38,7 @@ for book in root.findall('info'):
     sub_name =  book.find('name').text
 
 # initializing agent
-agent_path = sub_name + "_hw2_test.py"
+agent_path = sub_name + "_hw4_test.py"
 module_name = agent_path.replace('/', '.').replace('.py', '')
 spec = importlib.util.spec_from_file_location(module_name, agent_path)
 module = importlib.util.module_from_spec(spec)
@@ -56,21 +56,29 @@ total_reward = 0
 total_time = 0
 agent = Agent()
 time_limit = 120
+max_timesteps = env.spec.timestep_limit - 1 
 
 for episode in tqdm(range(10), desc="Evaluating"):
     obs = env.reset()
     start_time = time.time()
     episode_reward = 0
+    timestep = 0
     
     while True:
         action = agent.act(obs) 
 
         obs, reward, done, info = env.step(action)
         episode_reward += reward
+        timestep += 1
+
+        if timestep >= max_timesteps:
+            print(f"Max timestep reached for episode {episode}")
+            break
 
         if time.time() - start_time > time_limit:
             print(f"Time limit reached for episode {episode}")
             break
+        
 
         if done:
             break
@@ -80,7 +88,7 @@ for episode in tqdm(range(10), desc="Evaluating"):
     total_time += (end_time - start_time)
 
 
-score = total_reward / 50
+score = total_reward / 10
 print(f"Final Score: {score}")
 
 # push to leaderboard
