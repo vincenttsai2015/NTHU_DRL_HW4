@@ -83,7 +83,7 @@ class Agent:
     def __init__(self):
         # for local test
         self.actor = Actor(339, 22, torch.ones(22))
-        self.actor.load_state_dict(torch.load('112065802_hw4_data'))
+        self.actor.load_state_dict(torch.load('112065802_hw4_data', map_location=torch.device('cpu')))
 
     def act(self, observation):
         state = obs_preprocessor(observation)
@@ -96,41 +96,6 @@ class Agent:
                 action[i] = 0
         return action
 
-class ReplayBuffer(object):
-    def __init__(self, state_dim, action_dim, max_size=int(4e6)):
-        self.max_size = max_size
-        self.ptr = 0
-        self.size = 0
-
-        self.state = np.zeros((max_size, state_dim))
-        self.action = np.zeros((max_size, action_dim))
-        self.next_state = np.zeros((max_size, state_dim))
-        self.reward = np.zeros((max_size, 1))
-        self.not_done = np.zeros((max_size, 1))
-
-
-    def add(self, state, action, next_state, reward, done):
-        self.state[self.ptr] = state
-        self.action[self.ptr] = action
-        self.next_state[self.ptr] = next_state
-        self.reward[self.ptr] = reward
-        self.not_done[self.ptr] = 1. - done
-
-        self.ptr = (self.ptr + 1) % self.max_size
-        self.size = min(self.size + 1, self.max_size)
-
-
-    def sample(self, batch_size):
-        ind = np.random.randint(0, self.size, size=batch_size)
-
-        return (
-            torch.FloatTensor(self.state[ind]).to(device),
-            torch.FloatTensor(self.action[ind]).to(device),
-            torch.FloatTensor(self.next_state[ind]).to(device),
-            torch.FloatTensor(self.reward[ind]).to(device),
-            torch.FloatTensor(self.not_done[ind]).to(device)
-        )
-
 if __name__ == '__main__':
     env = L2M2019Env(difficulty=2, visualize=False)
     observation, done = env.reset(), False
@@ -139,7 +104,6 @@ if __name__ == '__main__':
 
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
-    # max_action = float(env.action_space.high[0])
     
     agent = Agent()
     episodes = 10
